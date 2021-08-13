@@ -99,7 +99,6 @@ export default {
   },
   methods: {
     initTree() {
-      // 数据
 
       // 1、 选中页面给页面添加svg标签；设置Svg绘制区域的宽和高；添加g元素(svg的group分组标签元素)并设置位置。
       var width = 500;
@@ -111,14 +110,15 @@ export default {
         .attr("height", height)
         .append("g")
         .attr("transform", "translate(50,50)");
+
       // 2、生成树状布局，设置树图布局容器尺寸。
-      this.tree = d3.tree().size([2 * Math.PI, 50]).separation(function (a, b) {
-        return (a.parent == b.parent ? 1 : 2) / a.depth;
-      });//[360,320]
+      this.tree = d3.tree().size([360,320]);
+      
       let root = d3.hierarchy(this.treeData);
+      console.log('this.tree',this.tree);
       console.log('root',root);
-      let temp = this.tree(root);
-        console.log('temp',temp);
+      this.tree(root);  // // 确定每个节点在图上的位置，每个节点多了x,y属性
+
       // 3、对角线生成器,并旋转90度。
       let diagonal = d3
         .linkHorizontal()
@@ -129,18 +129,21 @@ export default {
           return d.x;
         }); //横纵坐标对调(x,y) => (y,x)
 
-      // 4、请求数据：
 
       // 4.1获取nodes节点数组和links连线数组。
       let nodes = root.descendants();
       let links = root.links();
+
       // 4.2生成连线。
       let link = svg
         .selectAll(".link")
         .data(links)
-        .enter()
-        .append("path")
+        // .enter()
+        // .append("path")
+        .join('path')
         .attr("class", "link")
+        .attr('fill','none')
+        .attr('stroke','#ccc')
         .attr("d", diagonal);
       // 4.3生成节点。
       let node = svg
@@ -152,7 +155,8 @@ export default {
         .attr("transform", function (d) {
           return "translate(" + d.y + "," + d.x + ")";
         })
-        .on("click", () => {
+        .on("click", (d) => {
+          console.log('d',d);
           console.log(`----------click------------`);
         })
         .on("mouseover", () => {
@@ -160,14 +164,17 @@ export default {
         });
 
       // 4.4给节点添加圆圈，设置半径。
-      node.append("circle").attr("r", 5);
+      node.append("circle").attr("r", 5)
+
       // 4.5给节点添加文本，设置文本的样式位置。
       node
         .append("text")
-        .text((d) => d.name)
+        .text((d) => {
+          console.log('d',d);
+          return d.data.name})
         .attr("dx", (d) => (d.children ? -15 : 15))
         .attr("dy", 5)
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"));
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
     },
   },
 };

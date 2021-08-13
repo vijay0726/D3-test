@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button>change</button>
   </div>
 </template>
 
@@ -95,7 +94,7 @@ export default {
     };
   },
   mounted() {
-      this.initTree()
+    this.initTree();
   },
   methods: {
     initTree() {
@@ -112,22 +111,16 @@ export default {
         .append("g")
         .attr("transform", "translate(150,150)");
       // 2、生成树状布局，设置树图布局容器尺寸。
-      this.tree = d3.tree().size([2 * Math.PI, 100]).separation(function (a, b) {
-        return (a.parent == b.parent ? 1 : 2) / a.depth;
-      });//[360,320]
+      this.tree = d3
+        .tree()
+        .size([2 * Math.PI, 140])
+        .separation(function (a, b) {
+          return (a.parent == b.parent ? 1 : 2) / a.depth;
+        }); //[360,320]
       let root = d3.hierarchy(this.treeData);
-      console.log('root',root);
+      console.log("root", root);
       let temp = this.tree(root);
-        console.log('temp',temp);
-      // 3、对角线生成器,并旋转90度。
-      let diagonal = d3
-        .linkHorizontal()
-        .x(function (d) {
-          return d.y;
-        })
-        .y(function (d) {
-          return d.x;
-        }); //横纵坐标对调(x,y) => (y,x)
+      console.log("temp", temp);
 
       // 4、请求数据：
 
@@ -138,22 +131,39 @@ export default {
       let link = svg
         .selectAll(".link")
         .data(links)
-        .enter()
-        .append("path")
+        // .enter()
+        // .append("path")
+        .join('path')
         .attr("class", "link")
-        .attr("d", d3.linkRadial()
-          .angle(function(d) { return d.x; })
-          .radius(function(d) { return d.y; }));
+        .attr('fill','none')
+        .attr('stroke','#ccc')
+        .attr('stroke-width','1.5px')
+        .attr(
+          "d",
+          d3
+            .linkRadial()
+            .angle(function (d) {
+              return d.x;
+            })
+            .radius(function (d) {
+              return d.y;
+            })
+        );
       // 4.3生成节点。
+      function radialPoint(x, y) {
+        return [(y = +y) * Math.cos((x -= Math.PI / 2)), y * Math.sin(x)];
+      }
       let node = svg
         .selectAll(".node")
         .data(nodes)
         .enter()
         .append("g")
         .attr("class", "node")
-        .attr("transform", function (d) {
-          return "translate(" + d.y + "," + d.x + ")";
-        })
+        .attr("stroke", "red")
+        .attr("transform", d => `
+        rotate(${d.x * 180 / Math.PI - 90})
+        translate(${d.y},0) 
+      `) // return "translate(" + radialPoint(d.x, d.y) + ")";
         .on("click", () => {
           console.log(`----------click------------`);
         })
