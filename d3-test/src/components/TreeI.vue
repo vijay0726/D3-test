@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button>change</button>
   </div>
 </template>
 
@@ -56,7 +55,7 @@ export default {
             name: "flex",
             children: [{ name: "FlareVis", value: 4116 }],
           },
-          {
+         /*  {
             name: "physics",
             children: [
               { name: "DragForce", value: 1082 },
@@ -87,7 +86,7 @@ export default {
               { name: "ScgfgfaleType", value: 1821 },
               { name: "TimeS2wcale", value: 5833 },
             ],
-          },
+          }, */
         ],
       },
       // 树布局
@@ -95,29 +94,30 @@ export default {
     };
   },
   mounted() {
-      this.initTree()
+    this.initTree();
   },
   methods: {
     initTree() {
-
       // 1、 选中页面给页面添加svg标签；设置Svg绘制区域的宽和高；添加g元素(svg的group分组标签元素)并设置位置。
-      var width = 500;
-      var height = 500;
-      var svg = d3
+      // Set the dimensions and margins of the diagram
+      let margin = { top: 470, right: 90, bottom: 30, left: 90 };
+      let width = 1960 - margin.left - margin.right;
+      let height = 1200 - margin.top - margin.bottom;
+      let svg = d3
         .select("body")
         .append("svg")
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr("transform", "translate(50,50)");
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // 2、生成树状布局，设置树图布局容器尺寸。
-      this.tree = d3.tree().size([360,320]);
-      
+      this.tree = d3.tree().size([360, 320]).nodeSize([30, 170]);
+
       let root = d3.hierarchy(this.treeData);
-      console.log('this.tree',this.tree);
-      console.log('root',root);
-      this.tree(root);  // // 确定每个节点在图上的位置，每个节点多了x,y属性
+      console.log("this.tree", this.tree);
+      console.log("root", root);
+      this.tree(root); // // 确定每个节点在图上的位置，每个节点多了x,y属性
 
       // 3、对角线生成器,并旋转90度。
       let diagonal = d3
@@ -129,7 +129,6 @@ export default {
           return d.x;
         }); //横纵坐标对调(x,y) => (y,x)
 
-
       // 4.1获取nodes节点数组和links连线数组。
       let nodes = root.descendants();
       let links = root.links();
@@ -140,10 +139,10 @@ export default {
         .data(links)
         // .enter()
         // .append("path")
-        .join('path')
+        .join("path")
         .attr("class", "link")
-        .attr('fill','none')
-        .attr('stroke','#ccc')
+        .attr("fill", "none")
+        .attr("stroke", "#ccc")
         .attr("d", diagonal);
       // 4.3生成节点。
       let node = svg
@@ -156,7 +155,7 @@ export default {
           return "translate(" + d.y + "," + d.x + ")";
         })
         .on("click", (d) => {
-          console.log('d',d);
+          console.log("d", d);
           console.log(`----------click------------`);
         })
         .on("mouseover", () => {
@@ -164,17 +163,18 @@ export default {
         });
 
       // 4.4给节点添加圆圈，设置半径。
-      node.append("circle").attr("r", 5)
+      node.append("circle").attr("r", 5);
 
       // 4.5给节点添加文本，设置文本的样式位置。
       node
         .append("text")
         .text((d) => {
-          console.log('d',d);
-          return d.data.name})
+          console.log("d", d);
+          return d.data.name;
+        })
         .attr("dx", (d) => (d.children ? -15 : 15))
         .attr("dy", 5)
-        .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+        .attr("text-anchor", (d) => (d.children ? "end" : "start"));
     },
   },
 };
