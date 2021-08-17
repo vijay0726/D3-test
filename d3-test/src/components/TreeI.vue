@@ -1,6 +1,5 @@
 <template>
-  <div>
-  </div>
+  <div></div>
 </template>
 
 <script>
@@ -55,7 +54,7 @@ export default {
             name: "flex",
             children: [{ name: "FlareVis", value: 4116 }],
           },
-         /*  {
+          /*  {
             name: "physics",
             children: [
               { name: "DragForce", value: 1082 },
@@ -112,12 +111,14 @@ export default {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // 2、生成树状布局，设置树图布局容器尺寸。
-      this.tree = d3.tree().size([360, 320]).nodeSize([30, 170]);
+      this.tree = d3.tree().nodeSize([30, 170]);
 
       let root = d3.hierarchy(this.treeData);
+
+      this.tree(root); // // 确定每个节点在图上的位置，每个节点多了x,y属性
+
       console.log("this.tree", this.tree);
       console.log("root", root);
-      this.tree(root); // // 确定每个节点在图上的位置，每个节点多了x,y属性
 
       // 3、对角线生成器,并旋转90度。
       let diagonal = d3
@@ -155,7 +156,6 @@ export default {
           return "translate(" + d.y + "," + d.x + ")";
         })
         .on("click", (d) => {
-          console.log("d", d);
           console.log(`----------click------------`);
         })
         .on("mouseover", () => {
@@ -164,7 +164,6 @@ export default {
 
       // 4.4给节点添加圆圈，设置半径。
       node.append("circle").attr("r", 5);
-
       // 4.5给节点添加文本，设置文本的样式位置。
       node
         .append("text")

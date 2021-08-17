@@ -116,13 +116,10 @@ export default {
         .size([2 * Math.PI, 140])
         .separation(function (a, b) {
           return (a.parent == b.parent ? 1 : 2) / a.depth;
-        }); //[360,320]
+        }); 
       let root = d3.hierarchy(this.treeData);
-      console.log("root", root);
-      let temp = this.tree(root);
-      console.log("temp", temp);
-
-      // 4、请求数据：
+      
+      this.tree(root);
 
       // 4.1获取nodes节点数组和links连线数组。
       let nodes = root.descendants();
