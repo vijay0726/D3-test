@@ -117,8 +117,8 @@ export default {
 
       this.tree(root); // // 确定每个节点在图上的位置，每个节点多了x,y属性
 
-      console.log("this.tree", this.tree);
-      console.log("root", root);
+      // console.log("this.tree", this.tree);
+      // console.log("root", root);
 
       // 3、对角线生成器,并旋转90度。
       let diagonal = d3
@@ -145,6 +145,18 @@ export default {
         .attr("fill", "none")
         .attr("stroke", "#ccc")
         .attr("d", diagonal);
+
+      // 自定义节点填充样式
+      let color = d3.scaleOrdinal(d3.schemeCategory10);
+      const fill = (d) => {
+        if (d.depth === 0) return color(d.data.name);
+        while (d.depth > 1) {
+          d = d.parent;
+        }
+        // console.log("d.data.name", d.data.name);
+        return color(d.data.name);
+      };
+
       // 4.3生成节点。
       let node = svg
         .selectAll(".node")
@@ -152,6 +164,7 @@ export default {
         .enter()
         .append("g")
         .attr("class", "node")
+        .attr("fill", fill)
         .attr("transform", function (d) {
           return "translate(" + d.y + "," + d.x + ")";
         })
@@ -163,12 +176,12 @@ export default {
         });
 
       // 4.4给节点添加圆圈，设置半径。
-      node.append("circle").attr("r", 5);
+      node.append("circle").attr("r", 10);
       // 4.5给节点添加文本，设置文本的样式位置。
       node
         .append("text")
         .text((d) => {
-          console.log("d", d);
+          // console.log("d", d);
           return d.data.name;
         })
         .attr("dx", (d) => (d.children ? -15 : 15))
